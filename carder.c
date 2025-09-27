@@ -42,7 +42,7 @@ FILE *CURRENT_DECK_FILE = NULL;
 deck *deckRead(deck *deckBuffer, char *fileName)
 {
     deckBuffer->name = fileName;
-    fopen_s(&CURRENT_DECK_FILE, deckBuffer->name, "r");
+    CURRENT_DECK_FILE = fopen(deckBuffer->name, "r");
 
     if (CURRENT_DECK_FILE == NULL)
     {
@@ -104,7 +104,7 @@ deck *deckRead(deck *deckBuffer, char *fileName)
 int deckWrite(deck deckToWrite)
 {
     remove(deckToWrite.name);
-    fopen_s(&CURRENT_DECK_FILE, deckToWrite.name, "w");
+    CURRENT_DECK_FILE = fopen(deckToWrite.name, "w");
 
     if (CURRENT_DECK_FILE == NULL)
     {
