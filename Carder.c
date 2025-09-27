@@ -1,0 +1,4 @@
+/*
+    Carder is a word book application that you can
+    save new cards and view them as you want.
+*/
