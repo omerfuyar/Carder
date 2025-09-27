@@ -13,6 +13,7 @@
 */
 
 #include <stdio.h>
+#include <time.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -46,7 +47,7 @@ deck *deckRead(deck *deckBuffer, char *fileName)
 
     if (CURRENT_DECK_FILE == NULL)
     {
-        printf("File '%s' not found.", deckBuffer->name);
+        printf("\nFile '%s' not found.\n", deckBuffer->name);
         return NULL;
     }
 
@@ -103,12 +104,17 @@ deck *deckRead(deck *deckBuffer, char *fileName)
 
 int deckWrite(deck deckToWrite)
 {
+    if (deckToWrite.size == 0)
+    {
+        return 0;
+    }
+
     remove(deckToWrite.name);
     CURRENT_DECK_FILE = fopen(deckToWrite.name, "w");
 
     if (CURRENT_DECK_FILE == NULL)
     {
-        printf("File open failed for '%s'.", deckToWrite.name);
+        printf("\nFile open failed for '%s'.\n", deckToWrite.name);
         return 1;
     }
 
@@ -134,7 +140,7 @@ deck *deckBuild(deck *deckBuffer)
 
     char input[STRING_BUFFER_SIZE] = {0};
     card *currentCard = NULL;
-    int onFront = 1;
+    char onFront = 1;
     size_t inputStopLength = strlen(INPUT_STOP_STRING);
 
     printf("Enter front side of the card:\n");
@@ -218,25 +224,51 @@ int main(int argc, char **argv)
 {
     if (!(argc == 3 && !strcmp("new", argv[1])) && argc != 2)
     {
-        printf("\nPlease enter which deck you want to use. Or 'new + \"DeckName.deck\" if you want to create new.\n");
+        printf("\nPlease enter which deck you want to use. Or 'new + \"DeckName.deck\" if you want to create new.\n\n");
         return 1;
     }
+
+    srand(time(NULL));
 
     if (argc == 2) // carder Existing.deck
     {
         deck existingDeck = {0};
+
         if (deckRead(&existingDeck, argv[1]) == NULL)
         {
             return 1;
         }
 
-        for (size_t i = 0; i < existingDeck.size; i++)
-        {
-            card currentCard = existingDeck.cards[i];
-            printf("card id : %zu, front : '%s', back : '%s'\n", currentCard.id, currentCard.front, currentCard.back);
-        }
+        // printf("\n");
+        //
+        // for (size_t i = 0; i < existingDeck.size; i++)
+        //{
+        //    card currentCard = existingDeck.cards[i];
+        //    printf("card id : \n%zu, front : \n'%s', back : \n'%s'\n", currentCard.id, currentCard.front, currentCard.back);
+        //}
+        //
+        // printf("\n");
 
-        // show cards
+        printf("\nEntered view mode. Enter 'q' to leave. Just enter to view back.\n\n");
+
+        char charBuffer = 0;
+        char isFront = 1;
+        card *currentCard = NULL;
+
+        do
+        {
+            if (isFront)
+            {
+                currentCard = existingDeck.cards + (rand() % existingDeck.size);
+                printf("front : \n'%s'", currentCard->front);
+            }
+            else
+            {
+                printf("back : \n'%s'\n", currentCard->back);
+            }
+
+            isFront = !isFront;
+        } while (getchar() != 'q');
 
         deckDestroy(&existingDeck);
     }
